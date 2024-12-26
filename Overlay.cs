@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Echo_system.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -10,15 +13,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
+
 namespace Echo_system
 {
     public partial class Overlay : Form
     {
-        private bool _isdrawing = false;
-        private bool _isDrawingActive = false;
-        private Point _lastPoint = Point.Empty;
-        private List<List<Point>> _points = new List<List<Point>>();
-        private List<Point> _currpoints = new List<Point>();
+
+
         int screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
         int screenWidth = Screen.PrimaryScreen.WorkingArea.Width;
 
@@ -76,7 +78,6 @@ namespace Echo_system
                 ShowInTaskbar = false,
             };
 
-            // Lock the form size to prevent resizing
             leftchildForm.MaximumSize = barsize;
             leftchildForm.MinimumSize = barsize;
 
@@ -88,10 +89,10 @@ namespace Echo_system
             leftchildForm.Location = new Point(0, (int)(screenHeight * 0.5));
 
 
-            leftchildForm.Controls.Add(CreateButton("", "", "Drawing", 15, 10, 20, 20, DrawMode));
-            leftchildForm.Controls.Add(CreateButton("", "Button 2", "hhhh", 15, 40, 20, 20, DrawMode));
-            leftchildForm.Controls.Add(CreateButton("", "Button 3", "", 15, 70, 20, 20, DrawMode));
-            leftchildForm.Controls.Add(CreateButton("", "Button 4", "", 15, 100, 20, 20, DrawMode));
+            leftchildForm.Controls.Add(CreateButton("Assets/pen-icon.png", "", "Drawing", 15, 10, 20, 20, DrawMode));
+            leftchildForm.Controls.Add(CreateButton("", "Button 2", "hhhh", 15, 40, 20, 20, null));
+            leftchildForm.Controls.Add(CreateButton("", "Button 3", "", 15, 70, 20, 20, null));
+            leftchildForm.Controls.Add(CreateButton("", "Button 4", "", 15, 100, 20, 20, null));
 
 
             leftchildForm.Show();
@@ -103,9 +104,14 @@ namespace Echo_system
 
             if (imgpath != "")
             {
-                yourIcon = Image.FromFile(imgpath);
+                yourIcon = Image.FromFile(Path.Combine(Application.StartupPath, imgpath));
             }
-            
+
+            if (yourIcon != null)
+            {
+                yourIcon = ResizeImage(yourIcon, width, height);
+            }
+
 
             Button button = new Button
             {
@@ -113,10 +119,11 @@ namespace Echo_system
                 Image = yourIcon,
                 Size = new Size(width, height),
                 Location = new Point(x, y),
-                BackColor = Color.LightBlue,
+                BackColor = Color.Transparent,
                 FlatStyle = FlatStyle.Flat,
-                BackgroundImageLayout = ImageLayout.Zoom,
-            };
+                BackgroundImageLayout = ImageLayout.Stretch,
+                ImageAlign = ContentAlignment.MiddleCenter
+            };   
 
             
             button.FlatAppearance.BorderSize = 0;
@@ -133,14 +140,52 @@ namespace Echo_system
             return button;
         }
 
+        private Image ResizeImage(Image image, int width, int height)
+        {
+
+            float aspectRatio = (float)image.Width / image.Height;
+            int newWidth = width;
+            int newHeight = height;
+
+            if (width / aspectRatio <= height)
+            {
+                newHeight = (int)(width / aspectRatio);
+            }
+            else
+            {
+                newWidth = (int)(height * aspectRatio);
+            }
+
+            return new Bitmap(image, newWidth, newHeight);
+        }
+
         #region Drawmode
 
         #region Variables
+        private bool _isdrawing = false;
+        private bool _isDrawingActive = false;
+        private Point _lastPoint = Point.Empty;
+
+        private Dictionary<Tuple<Color, float>, List<List<Point>>> _points = 
+            new Dictionary<Tuple<Color, float>, List<List<Point>>>();
+
+        private List<Point> _currpoints = new List<Point>();
+
+
         private Color choice = Color.Red;
         private float thickness = 3;
         private Form ChoicePanel;
         private TrackBar thicknessSlider;
         private Button colorButton;
+        private Button clearButton;
+        private ColorDialog colorDialog;
+
+        ToolTip ctp = new ToolTip
+        {
+            AutoPopDelay = 0,
+            InitialDelay = 0,
+            ReshowDelay = 0,
+        };
         #endregion
 
         #region Drawing
@@ -176,6 +221,7 @@ namespace Echo_system
                 this.MouseDown -= Form_MouseDown;
                 this.MouseMove -= Form_MouseMove;
                 this.MouseUp -= Form_MouseUp;
+
                 _points.Clear();
                 
                 closepensettings(); 
@@ -211,17 +257,25 @@ namespace Echo_system
         {
             if (_isdrawing)
             {
-
                 _isDrawingActive = false;
 
 
                 if (_currpoints.Count > 1)
                 {
-                    _points.Add(new List<Point>(_currpoints));
+                    var key = Tuple.Create(choice, thickness);
+
+
+                    if (!_points.ContainsKey(key))
+                    {
+                        _points[key] = new List<List<Point>>();
+                    }
+
+
+                    _points[key].Add(new List<Point>(_currpoints)); 
+
+                    _currpoints.Clear();
                 }
 
-
-                _currpoints.Clear();
                 _lastPoint = Point.Empty;
 
 
@@ -235,20 +289,35 @@ namespace Echo_system
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-             
-            using (Pen pen = new Pen(choice, thickness))
+
+
+            foreach (var entry in _points)
             {
 
-                foreach (var drawing in _points)
+                var color = entry.Key.Item1; 
+                var thickness = entry.Key.Item2; 
+
+
+                using (Pen pen = new Pen(color, thickness))
                 {
-                    for (int i = 1; i < drawing.Count; i++)
+
+                    var strokes = entry.Value;
+
+
+                    foreach (var points in strokes)
                     {
-                        e.Graphics.DrawLine(pen, drawing[i - 1], drawing[i]);
+                        for (int i = 1; i < points.Count; i++)
+                        {
+                            e.Graphics.DrawLine(pen, points[i - 1], points[i]);
+                        }
                     }
                 }
+            }
 
 
-                if (_isdrawing && _isDrawingActive)
+            if (_isdrawing && _isDrawingActive)
+            {
+                using (Pen pen = new Pen(choice, thickness))
                 {
                     for (int i = 1; i < _currpoints.Count; i++)
                     {
@@ -256,6 +325,14 @@ namespace Echo_system
                     }
                 }
             }
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            _points.Clear();
+            _currpoints.Clear();
+
+            this.Invalidate();
         }
         #endregion
 
@@ -271,11 +348,64 @@ namespace Echo_system
                 {
                     FormBorderStyle = FormBorderStyle.None,
                     StartPosition = FormStartPosition.Manual,
-                    Size = new Size(200, 200),
+                    Size = new Size(250, 50),
+                    Location = new Point(100, 100),
                     BackColor = Color.White,
                     TopMost = true,
                     ShowInTaskbar = false
                 };
+
+                colorButton = new Button
+                {
+                    Location = new Point(20, 10),
+                    Size = new Size(30, 30),
+                    BackColor = choice,
+                };
+                colorButton.Click += ColorButton_Click;
+
+
+                thicknessSlider = new TrackBar
+                {
+                    Minimum = 1,
+                    Maximum = 10,
+                    Value = (int)thickness,
+                    TickStyle = TickStyle.Both,
+                    Location = new Point(60, 5),
+                    Size = new Size(100, 30)
+                };
+                thicknessSlider.ValueChanged += ThicknessSlider_ValueChanged;
+
+
+                Image clearbtnimg = Image.FromFile(Path.Combine(Application.StartupPath, "Assets", "clear-icon.png"));
+                clearbtnimg = ResizeImage(clearbtnimg, 30, 30);
+
+                clearButton = new Button
+                {
+                    Location = new Point(180, 10),
+                    Size = new Size(30, 30),
+                    BackColor = Color.Transparent,
+                    Image = clearbtnimg,
+
+                    BackgroundImageLayout = ImageLayout.Stretch,
+                    ImageAlign = ContentAlignment.MiddleCenter
+
+                };
+
+                clearButton.Click += clearButton_Click;
+
+                ctp.SetToolTip(clearButton, "Clear Board");
+                ctp.SetToolTip(colorButton, "Select Color");
+                ctp.SetToolTip(thicknessSlider, "Set Brush Thickness");
+
+                
+
+
+                colorDialog = new ColorDialog();
+
+
+                ChoicePanel.Controls.Add(colorButton);
+                ChoicePanel.Controls.Add(thicknessSlider);
+                ChoicePanel.Controls.Add(clearButton);
 
                 ChoicePanel.MouseDown += ChoicePanel_MouseDown;
                 ChoicePanel.MouseMove += ChoicePanel_MouseMove;
@@ -320,6 +450,22 @@ namespace Echo_system
                 isDragging = false;
             }
         }
+
+        private void ColorButton_Click(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                choice = colorDialog.Color;
+                colorButton.BackColor = choice;
+            }
+        }
+
+        private void ThicknessSlider_ValueChanged(object sender, EventArgs e)
+        {
+            thickness = thicknessSlider.Value; 
+        }
+
+
         #endregion
 
         #endregion
