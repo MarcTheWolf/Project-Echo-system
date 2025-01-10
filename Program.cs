@@ -1,5 +1,7 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,9 +16,12 @@ namespace Echo_system
         [STAThread]
         static void Main()
         {
+            // Start the Windows Forms Application
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Overlay());
+
         }
+
     }
 }

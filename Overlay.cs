@@ -1,4 +1,5 @@
-﻿using Echo_system.Properties;
+﻿using Echo_system.AI_System;
+using Echo_system.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -42,6 +43,11 @@ namespace Echo_system
 
         private Form leftchildForm;
 
+        private AITextChat textForm;
+        private CharacterForm videoForm;
+
+    
+
 
         public Overlay()
         {
@@ -57,12 +63,13 @@ namespace Echo_system
             this.TopMost = true;
             this.DoubleBuffered = true;
 
-            // Make the form layered and transparent
+
             int style = GetWindowLong(this.Handle, GWL_EXSTYLE);
             SetWindowLong(this.Handle, GWL_EXSTYLE, style | WS_EX_LAYERED | WS_EX_TRANSPARENT);
             SetLayeredWindowAttributes(this.Handle, 0, 0, LWA_ALPHA);
 
             CreateLeftBar();
+            CreateBottomBar();
         }
 
         private void CreateLeftBar()
@@ -76,6 +83,7 @@ namespace Echo_system
                 BackColor = Color.White,
                 TopMost = true,
                 ShowInTaskbar = false,
+                Location = new Point(0, (int)(screenHeight * 0.5))
             };
 
             leftchildForm.MaximumSize = barsize;
@@ -86,26 +94,36 @@ namespace Echo_system
 
             leftchildForm.MinimumSize = barsize;
             leftchildForm.AutoSize = false;
-            leftchildForm.Location = new Point(0, (int)(screenHeight * 0.5));
 
 
-            leftchildForm.Controls.Add(CreateButton("Assets/pen-icon.png", "", "Drawing", 15, 10, 20, 20, DrawMode));
-            leftchildForm.Controls.Add(CreateButton("", "Button 2", "hhhh", 15, 40, 20, 20, null));
-            leftchildForm.Controls.Add(CreateButton("", "Button 3", "", 15, 70, 20, 20, null));
-            leftchildForm.Controls.Add(CreateButton("", "Button 4", "", 15, 100, 20, 20, null));
+
+            leftchildForm.Controls.Add(CreateButton(Resources.Icons.pen_icon, "", "Drawing Board", 15, 10, 20, 20, DrawMode));
+            leftchildForm.Controls.Add(CreateButton(Resources.Icons.calander_icon, "", "Scheduler", 15, 50, 20, 20, Scheduler));
+
 
 
             leftchildForm.Show();
         }
 
-        private Button CreateButton(string imgpath, string text, string tooltiptext, int x, int y, int width, int height, EventHandler handler)
-        {
-            Image yourIcon = null;
 
-            if (imgpath != "")
-            {
-                yourIcon = Image.FromFile(Path.Combine(Application.StartupPath, imgpath));
-            }
+
+        public void CreateBottomBar()
+        {
+            videoForm = new CharacterForm("test", new Size(screenWidth, screenHeight), new Size(200, 250), new Size(screenWidth, screenHeight));
+            videoForm.Show();
+            // Create a form for the text box
+            Size textFormSize = new Size(400, 60);
+            textForm = new AITextChat(textFormSize, new Size(screenWidth, screenHeight), videoForm);
+            textForm.Show();
+            
+        }
+
+
+
+        private Button CreateButton(Image imgpath, string text, string tooltiptext, int x, int y, int width, int height, EventHandler handler)
+        {
+            Image yourIcon = imgpath;
+            
 
             if (yourIcon != null)
             {
@@ -221,10 +239,13 @@ namespace Echo_system
                 this.MouseDown -= Form_MouseDown;
                 this.MouseMove -= Form_MouseMove;
                 this.MouseUp -= Form_MouseUp;
-
-                _points.Clear();
                 
                 closepensettings(); 
+
+                if (Properties.Settings.Default.ClearDrawingOnClose)
+                {
+                    _points.Clear();
+                }
 
                 this.Invalidate();
             }
@@ -376,7 +397,7 @@ namespace Echo_system
                 thicknessSlider.ValueChanged += ThicknessSlider_ValueChanged;
 
 
-                Image clearbtnimg = Image.FromFile(Path.Combine(Application.StartupPath, "Assets", "clear-icon.png"));
+                Image clearbtnimg = Resources.Icons.clear_icon;
                 clearbtnimg = ResizeImage(clearbtnimg, 30, 30);
 
                 clearButton = new Button
@@ -469,5 +490,30 @@ namespace Echo_system
         #endregion
 
         #endregion
+
+        #region Scheduler
+        private Form Schedule;
+        private void Scheduler(object sender, EventArgs e)
+        {
+
+            if (Schedule == null || Schedule.IsDisposed)
+            {
+                Schedule = new Calander();
+            }
+
+
+            if (!Schedule.Visible)
+            {
+                Schedule.Show();
+                Schedule.BringToFront();
+            }
+            else
+            {
+                Schedule.Hide();
+            }
+        }
+        #endregion
+
+
     }
 }
