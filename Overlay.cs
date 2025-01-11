@@ -111,7 +111,7 @@ namespace Echo_system
         {
             videoForm = new CharacterForm("test", new Size(screenWidth, screenHeight), new Size(200, 250), new Size(screenWidth, screenHeight));
             videoForm.Show();
-            // Create a form for the text box
+
             Size textFormSize = new Size(400, 60);
             textForm = new AITextChat(textFormSize, new Size(screenWidth, screenHeight), videoForm);
             textForm.Show();
