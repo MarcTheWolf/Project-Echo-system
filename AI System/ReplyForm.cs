@@ -26,7 +26,6 @@ namespace Echo_system.AI_System
             _characterForm = characterForm;
             _size = size;
 
-            // Configure the form
             this.Size = _size;
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.Manual;
@@ -38,7 +37,6 @@ namespace Echo_system.AI_System
             TopMost = true;
 
 
-            // Initialize the Label
             replyLabel = new Label()
             {
                 Size = new Size(this.ClientSize.Width - 10, this.ClientSize.Height - 10),
