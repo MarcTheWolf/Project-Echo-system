@@ -99,7 +99,6 @@ namespace Echo_system
 
             leftchildForm.Controls.Add(CreateButton(Resources.Icons.pen_icon, "", "Drawing Board", 15, 10, 20, 20, DrawMode));
             leftchildForm.Controls.Add(CreateButton(Resources.Icons.calander_icon, "", "Scheduler", 15, 50, 20, 20, Scheduler));
-            leftchildForm.Controls.Add(CreateButton(null, "", "NotePad", 15, 90, 20, 20, Textbox));
 
 
 
@@ -515,26 +514,6 @@ namespace Echo_system
         }
         #endregion
 
-        #region NotePad
-        private NotePad NotePad;
-        private void Textbox(object sender, EventArgs e)
-        {
-            if (NotePad == null || NotePad.IsDisposed)
-            {
-                NotePad = new NotePad();
-            }
 
-            if (!NotePad.Visible)
-            {
-                NotePad.Show();
-                NotePad.BringToFront();
-            }
-            else
-            {
-                NotePad.Hide();
-            }
-        }
-
-        #endregion
     }
 }

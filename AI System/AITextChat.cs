@@ -123,7 +123,6 @@ namespace Echo_system.AI_System
             {
                 ReplyForm replyer = new ReplyForm(_characterform, replyFormSize);
                 replyer.ShowReply("System message: User's screentime has exceeded healthy limits, remind user to take a break");
-                _characterform.ChangeState("Sleeping", true);
             };
 
             eventPostedTrigger = new Button()
@@ -142,7 +141,7 @@ namespace Echo_system.AI_System
             eventPostedTrigger = new Button()
             {
                 Location = new Point(110, 10),
-                Size = new Size(80, 50),
+                Size = new Size(100, 50),
                 Text = "SSC - 10sec"
             };
             triggerForm.Controls.Add(eventPostedTrigger);
@@ -151,7 +150,7 @@ namespace Echo_system.AI_System
             {
 
                 Timer timer = new Timer();
-                timer.Interval = 10000;
+                timer.Interval = 5000;
                 timer.Tick += (s, args) =>
                 {
                     timer.Stop();

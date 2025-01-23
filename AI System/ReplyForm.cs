@@ -78,7 +78,6 @@ namespace Echo_system.AI_System
             string outputText = await ProcessOutput(text);
             replyLabel.Text = outputText;
             this.Show();
-            _characterForm.ChangeState("Moving", false);
             timer.Start();
         }
 

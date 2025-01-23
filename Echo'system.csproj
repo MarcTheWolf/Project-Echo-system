@@ -334,12 +334,6 @@
     <Compile Include="CalanderControl.Designer.cs">
       <DependentUpon>CalanderControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="NotePad.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NotePad.Designer.cs">
-      <DependentUpon>NotePad.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -383,9 +377,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Launcher.resx">
       <DependentUpon>Launcher.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NotePad.resx">
-      <DependentUpon>NotePad.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Overlay.resx">
       <DependentUpon>Overlay.cs</DependentUpon>
@@ -495,8 +486,6 @@
     <Content Include="Resources\Characters\test\Idle\%287%29.jpg" />
     <Content Include="Resources\Characters\test\Idle\%288%29.jpg" />
     <Content Include="Resources\Characters\test\Idle\%289%29.jpg" />
-    <None Include="Resources\next-icon.png" />
-    <None Include="Resources\previous-icon.png" />
     <None Include="Resources\Physical Assets\Characters\test\Idle\  %2810%29.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
