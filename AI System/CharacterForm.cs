@@ -37,7 +37,6 @@ namespace Echo_system.AI_System
             this.ShowInTaskbar = false;
 
 
-
             pictureBox = new PictureBox
             {
                 Size = characterSize,
@@ -118,6 +117,8 @@ namespace Echo_system.AI_System
         }
 
 
+
+
         private int ExtractNumberFromFileName(string fileName)
         {
 
@@ -128,12 +129,20 @@ namespace Echo_system.AI_System
         private void InitializeComponent()
         {
             this.SuspendLayout();
+            // 
+            // CharacterForm
+            // 
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "CharacterForm";
+            this.Load += new System.EventHandler(this.CharacterForm_Load);
             this.ResumeLayout(false);
+
         }
 
+        private void CharacterForm_Load(object sender, EventArgs e)
+        {
 
+        }
     }
 
 }
