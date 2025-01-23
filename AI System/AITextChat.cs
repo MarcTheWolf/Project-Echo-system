@@ -77,6 +77,7 @@ namespace Echo_system.AI_System
             if (textbox.Text == "/trigger")
             {
                 triggerPanel();
+                textbox.Clear();
             }
             else
             {
@@ -123,7 +124,7 @@ namespace Echo_system.AI_System
             {
                 ReplyForm replyer = new ReplyForm(_characterform, replyFormSize);
                 replyer.ShowReply("System message: User's screentime has exceeded healthy limits, remind user to take a break");
-                _characterform.ChangeState("Sleeping", true);
+                _characterform.ChangeState("Sleeping", false);
             };
 
             eventPostedTrigger = new Button()
