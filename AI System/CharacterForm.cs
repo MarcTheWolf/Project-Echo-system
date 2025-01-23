@@ -53,7 +53,6 @@ namespace Echo_system.AI_System
                  
             framesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "characters", characterName, currentState);
             LoadFramesForState(currentState);
-
         }
 
         public Point PictureBoxLocation { get { return pictureBox.Location; } }
@@ -125,6 +124,24 @@ namespace Echo_system.AI_System
 
             var match = System.Text.RegularExpressions.Regex.Match(Path.GetFileNameWithoutExtension(fileName), @"\d+");
             return match.Success ? int.Parse(match.Value) : 0;
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // CharacterForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "CharacterForm";
+            this.Load += new System.EventHandler(this.CharacterForm_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void CharacterForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 
