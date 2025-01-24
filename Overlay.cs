@@ -109,7 +109,7 @@ namespace Echo_system
 
         public void CreateBottomBar()
         {
-            videoForm = new CharacterForm("test", new Size(screenWidth, screenHeight), new Size(200, 250), new Size(screenWidth, screenHeight));
+            videoForm = new CharacterForm("test", new Size(screenWidth, screenHeight), new Size(100, 125), new Size(screenWidth, screenHeight));
             videoForm.Show();
             // Create a form for the text box
             Size textFormSize = new Size(400, 60);

@@ -22,7 +22,7 @@ namespace Echo_system.AI_System
         private int currentFrameIndex;
         private string framesDirectory;
         private bool loopAnimation = true;
-
+        private int prod = 0;
         public CharacterForm(string characterName, Size formSize, Size characterSize, Size screenSize)
         {
             this.characterName = characterName;
@@ -44,6 +44,32 @@ namespace Echo_system.AI_System
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
             this.Controls.Add(pictureBox);
+
+            pictureBox.MouseDown += (sender, e) =>
+            {
+                if (prod == 0)
+                {
+                    ChangeState("Interact", false);
+                    prod += 1;
+                }
+
+                else if (prod == 1)
+                {
+                    ChangeState("Interact2", false);
+                    prod += 1;
+                }
+
+                else if (prod == 2)
+                {
+                    ChangeState("Interact3", false);
+                    prod = 0;
+                }
+            };
+
+            pictureBox.Click += (sender, e) =>
+            {
+                MessageBox.Show("PictureBox clicked!");
+            };
             DragHelper.EnableDrag(pictureBox, pictureBox);
 
 
@@ -53,7 +79,7 @@ namespace Echo_system.AI_System
                  
             framesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "characters", characterName, currentState);
             LoadFramesForState(currentState);
-
+            ChangeState("Entry", false);
         }
 
         public Point PictureBoxLocation { get { return pictureBox.Location; } }
